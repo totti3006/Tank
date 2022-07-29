@@ -7,11 +7,6 @@ import BlueBullet from './tankComponents/BlueBullet'
 import LifeBar from './tankComponents/LifeBar'
 
 class Player extends BaseTank {
-  // private pointer: Phaser.Input.Pointer
-  // private cursors: Phaser.Types.Input.Keyboard.CursorKeys
-  // private joyStickLeft: any
-  // private joyStickRight: any
-
   private controller: PlayerController
   private maxBullets: number
   private allowShoot: boolean
@@ -25,8 +20,7 @@ class Player extends BaseTank {
     this.addTouchingButtonEvent()
     this.createBulletsPool()
     this.createController()
-    // this.createPCcontrol()
-    // this.createJoyStick()
+
     this.scene.add.existing(this)
   }
 
@@ -60,7 +54,6 @@ class Player extends BaseTank {
     this.maxBullets = 10
     this.allowShoot = true
     this.setOrigin(0.5, 0.5).setDepth(0)
-    // this.angle = 250
     this.scene.physics.world.enable(this)
   }
 
@@ -130,27 +123,6 @@ class Player extends BaseTank {
   private createController(): void {
     this.controller = new PlayerController(this.scene)
   }
-
-  // private createPCcontrol(): void {
-  //   this.cursors = this.scene.input.keyboard.createCursorKeys()
-  //   this.pointer = this.scene.input.activePointer
-  // }
-
-  // private createJoyStick(): void {
-  //   // @ts-ignore
-  //   this.joyStickLeft = this.scene.plugins.get('virtualJoystick').add(this.scene, {
-  //     x: this.scene.cameras.main.width * 0.5 - 500,
-  //     y: this.scene.cameras.main.height * 0.5 + 450,
-  //     radius: 100
-  //   })
-
-  //   // @ts-ignore
-  //   this.joyStickRight = this.scene.plugins.get('virtualJoystick').add(this.scene, {
-  //     x: this.scene.cameras.main.width * 0.5 + 500,
-  //     y: this.scene.cameras.main.height * 0.5 + 450,
-  //     radius: 100
-  //   })
-  // }
 
   private addPauseEvent(): void {
     const hudScene = this.scene.scene.get('HUDScene')

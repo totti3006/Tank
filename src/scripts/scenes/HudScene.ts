@@ -62,12 +62,11 @@ class HudScene extends Phaser.Scene {
   }
 
   private createEvents(): void {
-    const level = this.scene.get('GameScene')
+    const gameScene = this.scene.get('GameScene')
 
-    // this.checkExistingEvents()
-
-    level.events.on('enemyDie', this.updateScore, this)
-    level.events.on('gameOver', this.handleGameOver, this)
+    gameScene.events.on('enemyDie', this.updateScore, this)
+    gameScene.events.on('gameOver', this.handleGameOver, this)
+    gameScene.events.on('playerDie', this.handleGameOver, this)
 
     this.events.on('resumeGame', this.handleResumeGame)
   }

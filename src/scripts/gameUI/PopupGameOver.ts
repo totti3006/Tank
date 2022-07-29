@@ -133,6 +133,7 @@ class PopupGameOver extends Phaser.GameObjects.Container {
     let gameScene = this.scene.scene.manager.getScene('GameScene')
     gameScene.events.removeListener('enemyDie')
     gameScene.events.removeListener('gameOver')
+    gameScene.events.removeListener('playerDie')
     this.scene.events.removeListener('resumeGame')
     this.scene.events.removeListener('pauseGame')
   }
