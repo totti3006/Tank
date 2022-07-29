@@ -1,18 +1,16 @@
-import ButtonAnimation from '../animations/ButtonAnimation'
+import ButtonAnimation from '../animations/AnimatedButton'
 import PopupGameOver from '../gameUI/PopupGameOver'
 import PopupPause from '../gameUI/PopupPause'
-import ObjectsManager from '../objects/ObjectsManager'
 
 class HudScene extends Phaser.Scene {
   private settingButton: ButtonAnimation
 
-  private objectManager: ObjectsManager
   private popupPause: PopupPause
   private popupGameOver: PopupGameOver
 
   private textElements: Map<string, Phaser.GameObjects.Text>
 
-  private gameOver: boolean
+  private isPointerOutButton: boolean
 
   constructor() {
     super({
@@ -21,8 +19,7 @@ class HudScene extends Phaser.Scene {
   }
 
   init(): void {
-    this.objectManager = ObjectsManager.getInstance()
-    this.gameOver = false
+    this.isPointerOutButton = true
   }
 
   create(): void {
@@ -33,32 +30,28 @@ class HudScene extends Phaser.Scene {
     this.createPopupGameOver()
   }
 
-  update(): void {
-    let gameScene = this.scene.manager.getScene('GameScene')
-
-    if (gameScene.scene.isPaused() || this.gameOver) {
-      this.settingButton.setVisible(false)
-    } else if (!this.settingButton.visible) {
-      this.settingButton.setVisible(true)
-    }
-  }
+  update(): void {}
 
   private createButton(): void {
     this.settingButton = new ButtonAnimation(this, this.sys.canvas.width - 100, 20, 'settings_button')
     this.settingButton
       .setOrigin(0)
       .setScale(3)
-      .initButton(this.handleSettings)
+      .init(this.handleSettings)
       .setInteractive()
       .on('pointerup', pointer => {
         this.settingButton.playPointerUp()
       })
       .on('pointermove', pointer => {
-        this.objectManager.getPlayer().allowFire = false
         this.settingButton.playPointerMove()
+        if (this.isPointerOutButton) {
+          this.events.emit('pointerInButton')
+          this.isPointerOutButton = false
+        }
       })
       .on('pointerout', pointer => {
-        this.objectManager.getPlayer().allowFire = true
+        this.events.emit('pointerOutButton')
+        this.isPointerOutButton = true
       })
   }
 
@@ -70,8 +63,13 @@ class HudScene extends Phaser.Scene {
 
   private createEvents(): void {
     const level = this.scene.get('GameScene')
-    level.events.on('scoreChanged', this.updateScore, this)
+
+    // this.checkExistingEvents()
+
+    level.events.on('enemyDie', this.updateScore, this)
     level.events.on('gameOver', this.handleGameOver, this)
+
+    this.events.on('resumeGame', this.handleResumeGame)
   }
 
   private createPopupPause(): void {
@@ -84,7 +82,8 @@ class HudScene extends Phaser.Scene {
     this.popupGameOver.setVisible(false)
   }
 
-  private updateScore(): void {
+  private updateScore(score: number): void {
+    this.registry.set('score', this.registry.get('score') + score)
     this.textElements
       .get('SCORE')
       ?.setText(`Score ${this.registry.get('score')}`)
@@ -96,16 +95,19 @@ class HudScene extends Phaser.Scene {
   }
 
   private handleSettings = (): void => {
-    let gameScene = this.scene.manager.getScene('GameScene')
-
-    gameScene.scene.pause()
+    this.settingButton.setVisible(false)
+    this.events.emit('pauseGame')
     this.popupPause.appear()
   }
 
   private handleGameOver(): void {
-    this.gameOver = true
     this.popupGameOver.handleScoreAndHighScore()
     this.popupGameOver.appear()
+    this.settingButton.setVisible(false)
+  }
+
+  private handleResumeGame = (): void => {
+    this.settingButton.setVisible(true)
   }
 }
 

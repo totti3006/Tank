@@ -1,4 +1,4 @@
-import ButtonAnimation from '../animations/ButtonAnimation'
+import ButtonAnimation from '../animations/AnimatedButton'
 import HudScene from '../scenes/HudScene'
 
 class PopupGameOver extends Phaser.GameObjects.Container {
@@ -97,7 +97,7 @@ class PopupGameOver extends Phaser.GameObjects.Container {
 
     this.newGameButton
       .setScale(3)
-      .initButton(this.handleNewGame)
+      .init(this.handleNewGame)
       .setInteractive()
       .on('pointerup', pointer => {
         this.newGameButton.playPointerUp()
@@ -117,13 +117,24 @@ class PopupGameOver extends Phaser.GameObjects.Container {
 
   private handleNewGame = (): void => {
     this.scene.time.delayedCall(1200, () => {
-      this.scene.scene.manager.getScene('GameScene').scene.restart()
+      let gameScene = this.scene.scene.manager.getScene('GameScene')
+
+      this.removeEventsListener()
+
+      gameScene.scene.restart()
       this.scene.registry.values.score = 0
-      this.scene.registry.events.emit('scoreChanged')
       this.scene.scene.restart()
     })
 
     this.disappear()
+  }
+
+  private removeEventsListener(): void {
+    let gameScene = this.scene.scene.manager.getScene('GameScene')
+    gameScene.events.removeListener('enemyDie')
+    gameScene.events.removeListener('gameOver')
+    this.scene.events.removeListener('resumeGame')
+    this.scene.events.removeListener('pauseGame')
   }
 
   public disappear(): void {

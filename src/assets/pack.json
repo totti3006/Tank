@@ -123,6 +123,11 @@
         "url": "./assets/img/cloud.png"
       },
       {
+        "type": "image",
+        "key": "play_button",
+        "url": "./assets/img/Play.png"
+      },
+      {
         "type": "audio",
         "key": "barrel_shoot",
         "url": "./assets/sounds/barrel_shoot.mp3"

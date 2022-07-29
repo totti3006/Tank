@@ -1,5 +1,4 @@
-import ButtonAnimation from '../animations/ButtonAnimation'
-import ObjectsManager from '../objects/ObjectsManager'
+import ButtonAnimation from '../animations/AnimatedButton'
 import HudScene from '../scenes/HudScene'
 
 class PopupPause extends Phaser.GameObjects.Container {
@@ -9,18 +8,14 @@ class PopupPause extends Phaser.GameObjects.Container {
   private restartButton: ButtonAnimation
   private volumeButton: ButtonAnimation
 
-  private objectManager: ObjectsManager
-
   constructor(scene: HudScene) {
     super(scene)
 
     this.scene.add.existing(this)
     this.setPosition(this.scene.cameras.main.width * 0.5, this.scene.cameras.main.height).setScale(0.1)
 
-    this.objectManager = ObjectsManager.getInstance()
-
     this.createBackground()
-    this.createText()
+    this.createTitle()
     this.createCloseButton()
     this.createVolumeButton()
     this.createRestartButton()
@@ -32,7 +27,7 @@ class PopupPause extends Phaser.GameObjects.Container {
     this.add(this.background)
   }
 
-  private createText(): void {
+  private createTitle(): void {
     let text = this.scene.add.bitmapText(0, 0, 'font', 'Pause', 35)
     this.bitmapTexts.push(text)
 
@@ -50,7 +45,7 @@ class PopupPause extends Phaser.GameObjects.Container {
 
     this.closeButton
       .setScale(3)
-      .initButton(this.handleClose)
+      .init(this.handleClose)
       .setInteractive()
       .on('pointerup', pointer => {
         this.closeButton.playPointerUp()
@@ -69,7 +64,7 @@ class PopupPause extends Phaser.GameObjects.Container {
 
     this.volumeButton
       .setScale(3)
-      .initButton(this.handleVolume)
+      .init(this.handleVolume)
       .setInteractive()
       .on('pointerup', pointer => {
         this.volumeButton.playPointerUp()
@@ -94,7 +89,7 @@ class PopupPause extends Phaser.GameObjects.Container {
 
     this.restartButton
       .setScale(3)
-      .initButton(this.handleRestart)
+      .init(this.handleRestart)
       .setInteractive()
       .on('pointerup', pointer => {
         this.restartButton.playPointerUp()
@@ -113,21 +108,30 @@ class PopupPause extends Phaser.GameObjects.Container {
   }
 
   private handleClose = (): void => {
-    let gameScene = this.scene.scene.manager.getScene('GameScene')
-
     this.disappear()
-    gameScene.scene.resume()
+    this.scene.events.emit('resumeGame')
   }
 
   private handleRestart = (): void => {
     this.disappear()
 
     this.scene.time.delayedCall(400, () => {
-      this.scene.scene.manager.getScene('GameScene').scene.restart()
+      let gameScene = this.scene.scene.manager.getScene('GameScene')
+
+      this.removeEventsListener()
+
+      gameScene.scene.restart()
       this.scene.registry.values.score = 0
-      this.scene.registry.events.emit('scoreChanged')
       this.scene.scene.restart()
     })
+  }
+
+  private removeEventsListener(): void {
+    let gameScene = this.scene.scene.manager.getScene('GameScene')
+    gameScene.events.removeListener('enemyDie')
+    gameScene.events.removeListener('gameOver')
+    this.scene.events.removeListener('resumeGame')
+    this.scene.events.removeListener('pauseGame')
   }
 
   private handleVolume = (): void => {
