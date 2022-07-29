@@ -1,16 +1,17 @@
-import BaseTank from '../BaseTank'
+import Player from '../Player'
 import BaseBarrel from './BaseBarrel'
 import BlueBullet from './BlueBullet'
 
 class BlueBarrel extends BaseBarrel {
-  private pointer: Phaser.Input.Pointer
+  tank: Player
+
   private pauseTime: number
 
-  constructor(tank: BaseTank) {
+  constructor(tank: Player) {
     super(tank.scene, tank.x, tank.y, `barrel${tank.getColor()}`)
 
     this.setOrigin(0.5, 1).setDepth(1).setAngle(180)
-    this.pointer = this.scene.input.activePointer
+
     this.echoShootingTime = 100
     this.tank = tank
     this.scene.add.existing(this)
@@ -47,8 +48,8 @@ class BlueBarrel extends BaseBarrel {
     return Phaser.Math.Angle.Between(
       this.x,
       this.y,
-      this.pointer.x + this.scene.cameras.main.scrollX,
-      this.pointer.y + this.scene.cameras.main.scrollY
+      this.tank.getPointer().x + this.scene.cameras.main.scrollX,
+      this.tank.getPointer().y + this.scene.cameras.main.scrollY
     )
   }
 

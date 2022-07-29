@@ -1,5 +1,3 @@
-import AlignGrid from '../utils/AlignGrid'
-
 export type GameObj = Phaser.Types.Physics.Arcade.GameObjectWithBody
 
 export type Point = {
@@ -24,10 +22,10 @@ export type CellGridPosition = {
   startY: number
 }
 
-export type BaseUiConfig = {
-  scene: Phaser.Scene
-  x: number
-  y: number
-  grid: AlignGrid
-  index: number
-}
+// export type BaseUiConfig = {
+//   scene: Phaser.Scene
+//   x: number
+//   y: number
+//   grid: AlignGrid
+//   index: number
+// }

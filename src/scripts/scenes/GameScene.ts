@@ -55,7 +55,6 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels)
 
     // input
-    this.input.addPointer(2)
   }
 
   update(): void {

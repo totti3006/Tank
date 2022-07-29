@@ -14,7 +14,7 @@ class RedBullet extends BaseBullet {
 
   private init(): void {
     this.speed = 1000
-    this.damage = 1
+    this.damage = 10
     this.color = this.tank.getColor()
     this.animation = new BulletAnimation(this)
     this.states = {
