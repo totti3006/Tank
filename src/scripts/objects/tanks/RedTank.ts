@@ -93,15 +93,11 @@ class RedTank extends BaseTank {
   }
 
   private createBulletsPool(): void {
-    // console.log('Before create bullet pool')
-    // console.log(this.bullets)
     for (let i = 0; i < this.maxBullets; i++) {
       let bullet = new RedBullet(this)
       bullet.setIdle()
       this.bullets.add(bullet)
     }
-    // console.log('After create bullet pool')
-    // console.log(this.bullets)
   }
 
   private addPauseEvent(): void {

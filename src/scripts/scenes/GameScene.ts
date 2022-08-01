@@ -3,6 +3,9 @@ import RedTank from '../objects/tanks/RedTank'
 import { Obstacle } from '../objects/obstacles/Obstacle'
 import { GameObj } from '../constants/Types'
 import BaseBullet from '../objects/tanks/tankComponents/BaseBullet'
+import RedPlane from '../objects/plane/RedPlane'
+import MortalObject from '../objects/MortalObject'
+import BasePlaneBullet from '../objects/plane/BasePlaneBullet'
 
 export class GameScene extends Phaser.Scene {
   private map: Phaser.Tilemaps.Tilemap
@@ -10,7 +13,8 @@ export class GameScene extends Phaser.Scene {
 
   // game objects
   private player: Player
-  private enemies: Phaser.GameObjects.Group
+  private redTanks: Phaser.GameObjects.Group
+  private redPlanes: Phaser.GameObjects.Group
   private obstacles: Phaser.GameObjects.Group
   private layer: Phaser.Tilemaps.TilemapLayer
 
@@ -43,9 +47,15 @@ export class GameScene extends Phaser.Scene {
 
     this.loadObjectsFromTilemap()
 
+    this.createPlanes()
+
     this.createCollide()
 
     this.addEventListener()
+
+    this.addTimeEvent()
+
+    this.addCustomCursor()
 
     // sound
     this.hitSound = this.sound.add('explosion')
@@ -54,7 +64,8 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.player)
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels)
 
-    // input
+    // save map info
+    this.registry.set('mapSize', { width: this.map.widthInPixels, height: this.map.heightInPixels })
   }
 
   update(): void {
@@ -65,18 +76,22 @@ export class GameScene extends Phaser.Scene {
       this.winGame = true
     }
 
-    this.enemies.children.each((enemy: Phaser.GameObjects.GameObject) => {
-      if (!(enemy instanceof RedTank)) return
+    this.redTanks.children.each((tank: Phaser.GameObjects.GameObject) => {
+      if (!(tank instanceof RedTank)) return
 
-      enemy.update()
-      if (this.player.active && enemy.active && this.player.state !== 'pause') {
-        enemy.getBarrel().rotateToTarget(this.player)
+      tank.update()
+      if (this.player.active && tank.active && this.player.state !== 'pause') {
+        tank.getBarrel().rotateToTarget(this.player)
       }
     }, this)
   }
 
   private initObjectsGroup(): void {
-    this.enemies = this.add.group({
+    this.redTanks = this.add.group({
+      runChildUpdate: true
+    })
+
+    this.redPlanes = this.add.group({
       runChildUpdate: true
     })
 
@@ -99,15 +114,15 @@ export class GameScene extends Phaser.Scene {
     })
   }
 
-  private createEnemy(x: number, y: number): void {
-    let enemy: RedTank = new RedTank({
+  private createRedTank(x: number, y: number): void {
+    let tank: RedTank = new RedTank({
       scene: this,
       x: x,
       y: y,
       texture: 'tankRed'
     })
 
-    this.enemies.add(enemy)
+    this.redTanks.add(tank)
   }
 
   private createObstacles(x: number, y: number, type: string): void {
@@ -129,11 +144,30 @@ export class GameScene extends Phaser.Scene {
       if (object.type === 'player') {
         this.createPlayer(object.x, object.y)
       } else if (object.type === 'enemy') {
-        this.createEnemy(object.x, object.y)
+        this.createRedTank(object.x, object.y)
       } else {
         this.createObstacles(object.x, object.y, object.type)
       }
     })
+  }
+
+  private createPlanes(): void {
+    for (let i = 0; i < 5; i++) {
+      this.createPlane()
+    }
+  }
+
+  private createPlane(): void {
+    let plane = new RedPlane({
+      scene: this,
+      x: -50,
+      y: -50,
+      texture: 'plane-red'
+    })
+
+    this.redPlanes.add(plane)
+    plane.setTarget(this.player)
+    plane.setIdle()
   }
 
   private createCollide(): void {
@@ -146,19 +180,45 @@ export class GameScene extends Phaser.Scene {
 
     this.physics.add.collider(this.player.getBullets(), this.obstacles, this.bulletHitObstacles)
 
-    this.enemies.children.each((enemy: Phaser.GameObjects.GameObject) => {
-      if (!(enemy instanceof RedTank)) return
+    this.redTanks.children.each((tank: Phaser.GameObjects.GameObject) => {
+      if (!(tank instanceof RedTank)) return
 
-      this.physics.add.overlap(this.player.getBullets(), enemy, this.playerBulletHitEnemy)
-      this.physics.add.overlap(enemy.getBullets(), this.player, this.enemyBulletHitPlayer)
+      this.physics.add.overlap(this.player.getBullets(), tank, this.playerBulletHitEnemy)
+      this.physics.add.overlap(tank.getBullets(), this.player, this.enemyBulletHitPlayer)
 
-      this.physics.add.collider(enemy.getBullets(), this.obstacles, this.bulletHitObstacles)
-      this.physics.add.collider(enemy.getBullets(), this.layer, this.bulletHitLayer)
+      this.physics.add.collider(tank.getBullets(), this.obstacles, this.bulletHitObstacles)
+      this.physics.add.collider(tank.getBullets(), this.layer, this.bulletHitLayer)
     }, this)
+
+    this.redPlanes.children.each(plane => {
+      if (!(plane instanceof RedPlane)) return
+
+      this.physics.add.overlap(this.player.getBullets(), plane, this.playerBulletHitEnemy)
+      this.physics.add.overlap(plane.getBullets(), this.player, this.planeMissileHitPlayer)
+    })
   }
 
   private addEventListener(): void {
     this.events.on('enemyDie', this.handleEnemyKilled)
+  }
+
+  private addTimeEvent(): void {
+    this.time.addEvent({ delay: 3000, callback: this.generateRedPlane, repeat: -1 })
+  }
+
+  private addCustomCursor(): void {
+    this.input.setDefaultCursor('url(assets/cursors/Aim.cur), pointer')
+  }
+
+  private generateRedPlane = (): void => {
+    for (let plane of this.redPlanes.getChildren()) {
+      if (!(plane instanceof RedPlane)) return
+
+      if (plane.state === 'idle') {
+        plane.startFlying()
+        return
+      }
+    }
   }
 
   private bulletHitLayer = (bullet: GameObj): void => {
@@ -189,8 +249,18 @@ export class GameScene extends Phaser.Scene {
     player.gotHitByBullet(bullet.getDamage())
   }
 
+  private planeMissileHitPlayer = (bullet: GameObj, player: GameObj): void => {
+    if (!(bullet instanceof BasePlaneBullet && player instanceof Player)) return
+
+    if (!this.sound.mute) {
+      this.hitSound.play()
+    }
+    bullet.stop()
+    player.gotHitByBullet(bullet.getDamage())
+  }
+
   private playerBulletHitEnemy = (bullet: GameObj, enemy: GameObj): void => {
-    if (!(bullet instanceof BaseBullet && enemy instanceof RedTank)) return
+    if (!(bullet instanceof BaseBullet && enemy instanceof MortalObject)) return
 
     if (!this.sound.mute) {
       this.hitSound.play()
@@ -200,7 +270,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private checkGameOver(): boolean {
-    if (this.numOfEnemyKilled == this.enemies.getChildren().length) return true
+    if (this.numOfEnemyKilled == 15) return true
     return false
   }
 

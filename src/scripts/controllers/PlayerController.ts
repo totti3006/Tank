@@ -59,16 +59,16 @@ class PlayerController {
   private initMobile(): void {
     // @ts-ignore
     this.joyStickLeft = this.scene.plugins.get('virtualJoystick').add(this.scene, {
-      x: this.scene.cameras.main.width * 0.5 - 500,
-      y: this.scene.cameras.main.height * 0.5 + 400,
-      radius: 100
+      x: 0 + 300,
+      y: this.scene.cameras.main.height * 0.5 + 300,
+      radius: 200
     })
 
     // @ts-ignore
     this.joyStickRight = this.scene.plugins.get('virtualJoystick').add(this.scene, {
-      x: this.scene.cameras.main.width * 0.5 + 500,
-      y: this.scene.cameras.main.height * 0.5 + 400,
-      radius: 100
+      x: this.scene.cameras.main.width - 300,
+      y: this.scene.cameras.main.height * 0.5 + 300,
+      radius: 200
     })
 
     this.scene.input.addPointer(2)

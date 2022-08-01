@@ -41,8 +41,8 @@ export class MenuScene extends Phaser.Scene {
       'play_button'
     )
     this.playButton
-      .setScale(4)
-      .setScaleAnimationRatio(4.2)
+      .setScale(7)
+      .setScaleAnimationRatio(7.2)
       .init(this.handleClickPlayButton)
       .setInteractive()
       .playScale()

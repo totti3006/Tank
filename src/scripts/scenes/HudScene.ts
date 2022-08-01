@@ -33,10 +33,10 @@ class HudScene extends Phaser.Scene {
   update(): void {}
 
   private createButton(): void {
-    this.settingButton = new ButtonAnimation(this, this.sys.canvas.width - 100, 20, 'settings_button')
+    this.settingButton = new ButtonAnimation(this, this.sys.canvas.width - 200, 20, 'settings_button')
     this.settingButton
       .setOrigin(0)
-      .setScale(3)
+      .setScale(7)
       .init(this.handleSettings)
       .setInteractive()
       .on('pointerup', pointer => {
@@ -57,7 +57,7 @@ class HudScene extends Phaser.Scene {
 
   private createText(): void {
     this.textElements = new Map([
-      ['SCORE', this.addText(this.sys.canvas.width / 2 - 30, 30, `Score ${this.registry.get('score')}`)]
+      ['SCORE', this.addText(this.sys.canvas.width / 2 - 200, 50, `Score ${this.registry.get('score')}`)]
     ])
   }
 
@@ -86,11 +86,11 @@ class HudScene extends Phaser.Scene {
     this.textElements
       .get('SCORE')
       ?.setText(`Score ${this.registry.get('score')}`)
-      .setX(this.sys.canvas.width / 2 - 4 * (this.registry.get('score').toString().length - 1))
+      .setX(this.sys.canvas.width / 2 - 200)
   }
 
   private addText(x: number, y: number, value: string): Phaser.GameObjects.Text {
-    return this.add.text(x, y, value).setOrigin(0, 0).setFontSize(40)
+    return this.add.text(x, y, value).setOrigin(0, 0).setFontSize(80)
   }
 
   private handleSettings = (): void => {

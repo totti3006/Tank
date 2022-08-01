@@ -1,12 +1,12 @@
-import BaseTank from '../BaseTank'
+import MortalObject from '../../MortalObject'
 
 class LifeBar extends Phaser.GameObjects.Graphics {
-  private tank: BaseTank
+  private obj: MortalObject
 
-  constructor(tank: BaseTank) {
-    super(tank.scene)
+  constructor(obj: MortalObject) {
+    super(obj.scene)
 
-    this.tank = tank
+    this.obj = obj
     this.scene.add.existing(this)
   }
 
@@ -14,19 +14,19 @@ class LifeBar extends Phaser.GameObjects.Graphics {
     this.clear()
     this.fillStyle(0xe66a28, 1)
     this.fillRect(
-      -this.tank.width / 2,
-      this.tank.height / 2,
-      this.tank.width * (this.tank.remainingHealth / this.tank.baseHealth),
+      -this.obj.width / 2,
+      this.obj.height / 2,
+      this.obj.width * (this.obj.getRemainingHealth() / this.obj.getBaseHealth()),
       15
     )
     this.lineStyle(2, 0xffffff)
-    this.strokeRect(-this.tank.width / 2, this.tank.height / 2, this.tank.width, 15)
+    this.strokeRect(-this.obj.width / 2, this.obj.height / 2, this.obj.width, 15)
     this.setDepth(1)
   }
 
   update(): void {
-    this.x = this.tank.x
-    this.y = this.tank.y
+    this.x = this.obj.x
+    this.y = this.obj.y
   }
 }
 

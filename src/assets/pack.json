@@ -124,8 +124,23 @@
       },
       {
         "type": "image",
+        "key": "plane-red",
+        "url": "./assets/sprites/plane-red.png"
+      },
+      {
+        "type": "image",
+        "key": "plane-bullet",
+        "url": "./assets/sprites/plane-bullet.png"
+      },
+      {
+        "type": "image",
         "key": "play_button",
         "url": "./assets/img/Play.png"
+      },
+      {
+        "type": "image",
+        "key": "missile",
+        "url": "./assets/sprites/Missile.png"
       },
       {
         "type": "audio",
