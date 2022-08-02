@@ -5,7 +5,7 @@ import BlueBullet from './BlueBullet'
 class BlueBarrel extends BaseBarrel {
   tank: Player
 
-  private pauseTime: number
+  pauseTime: number
 
   constructor(tank: Player) {
     super(tank.scene, tank.x, tank.y, `barrel${tank.getColor()}`)
@@ -22,11 +22,11 @@ class BlueBarrel extends BaseBarrel {
     this.y = this.tank.y
   }
 
-  public rotateToTarget(): void {
-    let pointerAngle: number = this.calculatePointerAngle()
+  // public rotateToTarget(): void {
+  //   let pointerAngle: number = this.calculatePointerAngle()
 
-    this.angle = (pointerAngle + Math.PI / 2) * Phaser.Math.RAD_TO_DEG
-  }
+  //   this.angle = (pointerAngle + Math.PI / 2) * Phaser.Math.RAD_TO_DEG
+  // }
 
   public handleShoot(): void {
     if (this.scene.time.now > this.tank.lastShoot + this.tank.shootingRate) {
@@ -44,14 +44,14 @@ class BlueBarrel extends BaseBarrel {
     this.tank.lastShoot += this.scene.time.now - this.pauseTime
   }
 
-  private calculatePointerAngle(): number {
-    return Phaser.Math.Angle.Between(
-      this.x,
-      this.y,
-      this.tank.getPointer().x + this.scene.cameras.main.scrollX,
-      this.tank.getPointer().y + this.scene.cameras.main.scrollY
-    )
-  }
+  // private calculatePointerAngle(): number {
+  //   return Phaser.Math.Angle.Between(
+  //     this.x,
+  //     this.y,
+  //     this.tank.getPointer().x + this.scene.cameras.main.scrollX,
+  //     this.tank.getPointer().y + this.scene.cameras.main.scrollY
+  //   )
+  // }
 
   private shoot(): void {
     this.scene.cameras.main.shake(20, 0.005)
@@ -68,7 +68,7 @@ class BlueBarrel extends BaseBarrel {
     }
   }
 
-  private playShootingSound(): void {
+  playShootingSound(): void {
     if (!this.scene.sound.mute) {
       this.tank.fireSound.play()
     }

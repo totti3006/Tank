@@ -19,7 +19,6 @@ class Player extends BaseTank {
     this.addResumeEvent()
     this.addTouchingButtonEvent()
     this.createBulletsPool()
-    this.createController()
 
     this.scene.add.existing(this)
   }
@@ -81,14 +80,6 @@ class Player extends BaseTank {
     return this.controller.getPointer()
   }
 
-  public handleShooting(): void {
-    if (this.controller.isUsingPC()) {
-      this.handleShootOnPC()
-    } else {
-      this.handleShootOnJoyStick()
-    }
-  }
-
   public gotHitByBullet(damage: number): void {
     this.remainingHealth -= damage
 
@@ -104,12 +95,28 @@ class Player extends BaseTank {
     // console.log('die state')
   }
 
-  private handleInput(): void {
-    if (this.controller.isUsingPC()) {
-      this.handleMoveOnPC()
-    } else {
-      this.handleMoveOnJoyStick()
-    }
+  public isAllowShoot(): boolean {
+    return this.allowShoot
+  }
+
+  public move(angle: number, speed: number): void {
+    this.scene.physics.velocityFromRotation(angle, speed, this.body.velocity)
+  }
+
+  public rotate(angle: number): void {
+    this.rotation = angle
+  }
+
+  public stop(): void {
+    this.body.setVelocity(0, 0)
+  }
+
+  public rotateBarrel(angle: number): void {
+    this.barrel.rotation = angle
+  }
+
+  public shoot(): void {
+    this.barrel.handleShoot()
   }
 
   private createBulletsPool(): void {
@@ -118,10 +125,6 @@ class Player extends BaseTank {
       bullet.setIdle()
       this.bullets.add(bullet)
     }
-  }
-
-  private createController(): void {
-    this.controller = new PlayerController(this.scene)
   }
 
   private addPauseEvent(): void {
@@ -141,12 +144,8 @@ class Player extends BaseTank {
   }
 
   private processAlive(): void {
-    // console.log('alive state')
-
     this.barrel.update()
     this.lifeBar.update()
-    this.handleInput()
-    this.handleShooting()
   }
 
   private processPause(): void {
@@ -209,58 +208,6 @@ class Player extends BaseTank {
     this.barrel.setActive(false)
     this.lifeBar.setVisible(false)
     this.lifeBar.setActive(false)
-  }
-
-  private handleMoveOnPC(): void {
-    this.handleMove()
-    this.handleRotate()
-  }
-
-  private handleShootOnPC(): void {
-    this.barrel.rotateToTarget()
-    if (this.allowShoot && this.controller.getPointer().leftButtonDown()) {
-      this.barrel.handleShoot()
-    }
-  }
-
-  private handleMove(): void {
-    if (this.controller.getCursors().up.isDown) {
-      this.scene.physics.velocityFromRotation(this.rotation - Math.PI / 2, this.speed, this.body.velocity)
-    } else if (this.controller.getCursors().down.isDown) {
-      this.scene.physics.velocityFromRotation(this.rotation - Math.PI / 2, -this.speed, this.body.velocity)
-    } else {
-      this.body.setVelocity(0, 0)
-    }
-  }
-
-  private handleRotate(): void {
-    if (this.controller.getCursors().left.isDown) {
-      this.rotation -= this.rotateSpeed
-    } else if (this.controller.getCursors().right.isDown) {
-      this.rotation += this.rotateSpeed
-    }
-  }
-
-  private handleMoveOnJoyStick(): void {
-    if (this.controller.getJoyStickLeft().force != 0) {
-      this.scene.physics.velocityFromRotation(
-        this.controller.getJoyStickLeft().rotation,
-        this.speed,
-        this.body.velocity
-      )
-      this.rotation = this.controller.getJoyStickLeft().rotation + Math.PI / 2
-    } else {
-      this.body.setVelocity(0, 0)
-    }
-  }
-
-  private handleShootOnJoyStick(): void {
-    if (this.controller.getJoyStickRight().force != 0) {
-      this.barrel.rotation = this.controller.getJoyStickRight().rotation + Math.PI / 2
-      if (this.allowShoot) {
-        this.barrel.handleShoot()
-      }
-    }
   }
 }
 

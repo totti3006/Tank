@@ -6,6 +6,7 @@ import BaseBullet from '../objects/tanks/tankComponents/BaseBullet'
 import RedPlane from '../objects/plane/RedPlane'
 import MortalObject from '../objects/MortalObject'
 import BasePlaneBullet from '../objects/plane/BasePlaneBullet'
+import PlayerController from '../controllers/PlayerController'
 
 export class GameScene extends Phaser.Scene {
   private map: Phaser.Tilemaps.Tilemap
@@ -22,6 +23,9 @@ export class GameScene extends Phaser.Scene {
 
   private winGame: boolean
   private numOfEnemyKilled: number
+
+  // input
+  private playerController: PlayerController
 
   constructor() {
     super({
@@ -51,6 +55,8 @@ export class GameScene extends Phaser.Scene {
 
     this.createCollide()
 
+    this.createPlayerController()
+
     this.addEventListener()
 
     this.addTimeEvent()
@@ -70,6 +76,7 @@ export class GameScene extends Phaser.Scene {
 
   update(): void {
     this.player.update()
+    this.playerController.handleInput()
 
     if (this.checkGameOver() && !this.winGame) {
       this.events.emit('gameOver')
@@ -196,6 +203,10 @@ export class GameScene extends Phaser.Scene {
       this.physics.add.overlap(this.player.getBullets(), plane, this.playerBulletHitEnemy)
       this.physics.add.overlap(plane.getBullets(), this.player, this.planeMissileHitPlayer)
     })
+  }
+
+  private createPlayerController(): void {
+    this.playerController = new PlayerController(this.player)
   }
 
   private addEventListener(): void {

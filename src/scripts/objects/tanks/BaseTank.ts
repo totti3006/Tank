@@ -21,12 +21,12 @@ abstract class BaseTank extends MortalObject implements ITank {
   public gotHitByBullet(damage: number): void {}
   public die(): void {}
 
-  public getBullets(): Phaser.GameObjects.Group {
-    return this.bullets
-  }
-
   public getBarrel(): BaseBarrel {
     return this.barrel
+  }
+
+  public getBullets(): Phaser.GameObjects.Group {
+    return this.bullets
   }
 
   public getColor(): string {

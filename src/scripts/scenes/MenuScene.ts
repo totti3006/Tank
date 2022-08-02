@@ -1,4 +1,4 @@
-import AnimatedButton from '../animations/AnimatedButton'
+import AnimatedButton from '../gameUI/AnimatedButton'
 
 export class MenuScene extends Phaser.Scene {
   private startKey: Phaser.Input.Keyboard.Key

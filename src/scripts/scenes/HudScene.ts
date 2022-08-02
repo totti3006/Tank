@@ -1,4 +1,4 @@
-import ButtonAnimation from '../animations/AnimatedButton'
+import ButtonAnimation from '../gameUI/AnimatedButton'
 import PopupGameOver from '../gameUI/PopupGameOver'
 import PopupPause from '../gameUI/PopupPause'
 

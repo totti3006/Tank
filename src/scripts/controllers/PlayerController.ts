@@ -1,5 +1,8 @@
+import Player from '../objects/tanks/Player'
+
 class PlayerController {
   private scene: Phaser.Scene
+  private player: Player
 
   // pc
   private pointer: Phaser.Input.Pointer
@@ -11,8 +14,9 @@ class PlayerController {
 
   private isPC: boolean
 
-  constructor(scene: Phaser.Scene) {
-    this.scene = scene
+  constructor(player: Player) {
+    this.player = player
+    this.scene = player.scene
 
     this.checkDevice()
     this.init()
@@ -36,6 +40,77 @@ class PlayerController {
 
   public getJoyStickRight(): any {
     return this.joyStickRight
+  }
+
+  public handleInput(): void {
+    this.handleMove()
+    this.hanldeShoot()
+  }
+
+  public handleMove(): void {
+    if (this.isUsingPC()) {
+      this.handleMoveOnPC()
+    } else {
+      this.handleMoveOnJoyStick()
+    }
+  }
+
+  public hanldeShoot(): void {
+    if (this.isUsingPC()) {
+      this.handleShootOnPC()
+    } else {
+      this.handleShootOnJoyStick()
+    }
+  }
+
+  private handleMoveOnPC(): void {
+    if (this.cursors.up.isDown) {
+      this.player.move(this.player.rotation - Math.PI * 0.5, this.player.speed)
+    } else if (this.cursors.down.isDown) {
+      this.player.move(this.player.rotation - Math.PI * 0.5, -this.player.speed)
+    } else {
+      this.player.stop()
+    }
+
+    if (this.cursors.left.isDown) {
+      this.player.rotate(this.player.rotation - this.player.rotateSpeed)
+    } else if (this.cursors.right.isDown) {
+      this.player.rotate(this.player.rotation + this.player.rotateSpeed)
+    }
+  }
+
+  private handleMoveOnJoyStick(): void {
+    if (this.joyStickLeft.force != 0) {
+      this.player.move(this.joyStickLeft.rotation, this.player.speed)
+      this.player.rotate(this.joyStickLeft.rotation + Math.PI * 0.5)
+    } else {
+      this.player.stop()
+    }
+  }
+
+  private handleShootOnPC(): void {
+    let rotateAngle: number = this.angleOfPointerAndPlayer() + Math.PI * 0.5
+    this.player.rotateBarrel(rotateAngle)
+
+    if (this.player.isAllowShoot() && this.pointer.leftButtonDown()) {
+      this.player.shoot()
+    }
+  }
+
+  private handleShootOnJoyStick(): void {
+    if (this.joyStickRight.force != 0 && this.player.isAllowShoot()) {
+      this.player.rotateBarrel(this.joyStickRight.rotation + Math.PI * 0.5)
+      this.player.shoot()
+    }
+  }
+
+  private angleOfPointerAndPlayer(): number {
+    return Phaser.Math.Angle.Between(
+      this.player.getBarrel().x,
+      this.player.getBarrel().y,
+      this.pointer.x + this.scene.cameras.main.scrollX,
+      this.pointer.y + this.scene.cameras.main.scrollY
+    )
   }
 
   private checkDevice(): void {

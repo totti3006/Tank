@@ -1,12 +1,13 @@
-import BaseTank from '../BaseTank'
 import Player from '../Player'
+import RedTank from '../RedTank'
 import BaseBarrel from './BaseBarrel'
 import RedBullet from './RedBullet'
 
 class RedBarrel extends BaseBarrel {
-  private pauseTime: number
+  pauseTime: number
+  tank: RedTank
 
-  constructor(tank: BaseTank) {
+  constructor(tank: RedTank) {
     super(tank.scene, tank.x, tank.y, `barrel${tank.getColor()}`)
 
     this.setOrigin(0.5, 1).setDepth(1).setAngle(180)
@@ -50,7 +51,7 @@ class RedBarrel extends BaseBarrel {
     this.tank.lastShoot += this.scene.time.now - this.pauseTime
   }
 
-  private playShootingSound(): void {
+  playShootingSound(): void {
     if (!this.scene.sound.mute) {
       this.tank.fireSound.play()
     }

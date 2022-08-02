@@ -4,9 +4,11 @@ import BaseTank from '../BaseTank'
 abstract class BaseBarrel extends Phaser.GameObjects.Image implements IBarrel {
   tank: BaseTank
   echoShootingTime: number
+  pauseTime: number
 
+  rotateToTarget(target?: any): void {}
   handleShoot(): void {}
-  abstract rotateToTarget(target?: any): void
+  playShootingSound(): void {}
   pause(): void {}
   resume(): void {}
 }

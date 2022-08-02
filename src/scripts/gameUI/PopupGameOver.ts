@@ -1,4 +1,4 @@
-import ButtonAnimation from '../animations/AnimatedButton'
+import ButtonAnimation from './AnimatedButton'
 import HudScene from '../scenes/HudScene'
 
 class PopupGameOver extends Phaser.GameObjects.Container {

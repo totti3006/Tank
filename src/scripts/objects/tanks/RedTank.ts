@@ -1,6 +1,7 @@
 import TankExplodeAnimation from '../../animations/TankExplodeAnimation'
 import { IImageConstructor } from '../../interfaces/IImageConstructor'
 import BaseTank from './BaseTank'
+import BaseBarrel from './tankComponents/BaseBarrel'
 import LifeBar from './tankComponents/LifeBar'
 import RedBarrel from './tankComponents/RedBarrel'
 import RedBullet from './tankComponents/RedBullet'
